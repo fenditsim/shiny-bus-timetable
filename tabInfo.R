@@ -17,5 +17,7 @@ tabInfo <- tabItem(tabName = "info",
                   p("3. No information available is shown as NA inside a purple box"),
                   br(),
                   h2("Resources"),
-                  p("Click ", a(href = "https://github.com/fenditsim/shiny-bus-timetable", "here"), " to the corresponding Github repository.")
+                  p("Click ", a(href = "https://github.com/fenditsim/shiny-bus-timetable", "here"), " to the corresponding Github repository."),
+                  p("Click ", a(href = "https://github.com/fenditsim/shiny-bus-timetable/issues", "here"), " to report for any issues you find :)"),
+                  
                   )

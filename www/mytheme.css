@@ -1,0 +1,8 @@
+.navbar-default {
+    background-color: #e6e6fa !important;
+}
+
+.navbar-default:hover {
+    background-color: #e6e6fa !important;
+    color: white;
+}

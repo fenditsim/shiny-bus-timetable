@@ -5,6 +5,7 @@ library(shinydashboard)
 library(shinyjs)
 library(shinyBS)
 library(shinyWidgets)
+library(shinyalert)
 
 # Import relevant R scripts
 source("data.R")
@@ -50,7 +51,7 @@ shinyApp(
                           style="min-width:20px;max-width:50%; float:left"
                           ),
                       div(div(id = "click.12x", shinydashboard::valueBoxOutput(outputId = "latest.12x", width = 12)),
-                          style="min-width:280px;max-width:100%; float:right"
+                          style="min-width:260px;max-width:100%; float:right"
                           ),
                   ),
                   fluidRow(
@@ -58,7 +59,23 @@ shinyApp(
                         style="min-width:20px;max-width:50%; float:left"
                     ),
                     div(div(id = "click.11", valueBoxOutput(outputId = "latest.11", width = 12)),
-                        style="min-width:280px;max-width:100%; float:right"
+                        style="min-width:260px;max-width:100%; float:right"
+                    ),
+                  ),
+                  fluidRow(
+                    div(h1("14a"),
+                        style="min-width:20px;max-width:50%; float:left"
+                    ),
+                    div(div(id = "click.14a", valueBoxOutput(outputId = "latest.14a", width = 12)),
+                        style="min-width:260px;max-width:100%; float:right"
+                    ),
+                  ),
+                  fluidRow(
+                    div(h1("14"),
+                        style="min-width:20px;max-width:50%; float:left"
+                    ),
+                    div(div(id = "click.14", valueBoxOutput(outputId = "latest.14", width = 12)),
+                        style="min-width:260px;max-width:100%; float:right"
                     ),
                   )
                 )
@@ -69,6 +86,22 @@ shinyApp(
     )
   ),
   server = function(input, output, session){
+    
+    # Welcome message
+    shinyalert(
+      title = "Welcome!",
+      type = "info",
+      text = "This bus timetable is for illustration purpose only. Please visit Info for more information."
+    )
+    
+    # Alert for known issue
+    shinyalert(
+      title = "Known Issue",
+      type = "info",
+      text = "Travel from Coventry to Uni for 14 might not be accurate. This will be resolved in the following update."
+    )
+    
+
     
     # update choices for dest
     observe({
@@ -89,7 +122,7 @@ shinyApp(
       output$latest.12x <- renderValueBox({
         invalidateLater(1000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
         
-        if (end.origin() %in% c("Earlsdon City Arms", "Coventry Station Interchange", "Leamington Spa High Street", "Leamington Spa Upper Parade", "Kenilworth Clock")){
+        if (end.origin() %in% c("Earlsdon City Arms", "Coventry Station Interchange", "Leamington Spa High Street", "Leamington Spa Upper Parade", "Kenilworth Clock", "Maudslay Road The Maudslay", "Eastern Green Farcroft Avenue", "Torrington Ave", "Tile Hill Rail Station", "Allesley Old Road / Mount St", "Cannon Park Shops")){
           valueBox(
             value = "NA",
             subtitle = "", color = "purple"
@@ -114,7 +147,7 @@ shinyApp(
       output$latest.11 <- renderValueBox({
         invalidateLater(1000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
         
-        if (end.origin() %in% c("Coventry Station Warwick Road", "Canley Prior Deram Walk")){
+        if (end.origin() %in% c("Coventry Station Warwick Road", "Canley Prior Deram Walk", "Maudslay Road The Maudslay", "Eastern Green Farcroft Avenue", "Torrington Ave", "Tile Hill Rail Station", "Allesley Old Road / Mount St", "Cannon Park Shops")){
           valueBox(
             value = "NA",
             subtitle = "", color = "purple"
@@ -133,9 +166,58 @@ shinyApp(
             )
           }
         }
-        
-
       })
+      
+      # 14a
+      output$latest.14a <- renderValueBox({
+        invalidateLater(1000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
+        
+        if (end.origin() != "University of Warwick Bus Int"){
+          valueBox(
+            value = "NA",
+            subtitle = "", color = "purple"
+          )
+        }else{
+          if (!is.na(timecheck.14a(origin = start(), dest = end()))){
+            valueBox(
+              value = paste0(timecheck.14a(origin = start(), dest = end(), min = T), " minutes"), 
+              subtitle = tags$p(timecheck.14a(origin = start(), dest = end()), style = "font-size: 100%;"), 
+              color = if (timecheck.14a(origin = start(), dest = end(), min = T) < 5) "red" else if (timecheck.14a(origin = start(), dest = end(), min = T) >= 5 & timecheck.14a(origin = start(), dest = end(), min = T) < 10) "yellow" else "green"
+            )
+          }else{
+            valueBox(
+              value = "NA",
+              subtitle = "", color = "purple"
+            )
+          }
+        }
+      })
+      
+      # 14
+      output$latest.14 <- renderValueBox({
+        invalidateLater(1000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
+        
+        if (end.origin() %in% c("Coventry Station Interchange", "Coventry Station Warwick Road", "Canley Prior Deram Walk", "Earlsdon City Arms", "Coventry Station Interchange", "Leamington Spa High Street", "Leamington Spa Upper Parade", "Kenilworth Clock")){
+          valueBox(
+            value = "NA",
+            subtitle = "", color = "purple"
+          )
+        }else{
+          if (!is.na(timecheck.14(origin = start(), dest = end()))){
+            valueBox(
+              value = paste0(timecheck.14(origin = start(), dest = end(), min = T), " minutes"), 
+              subtitle = tags$p(timecheck.14(origin = start(), dest = end()), style = "font-size: 100%;"), 
+              color = if (timecheck.14(origin = start(), dest = end(), min = T) < 5) "red" else if (timecheck.14(origin = start(), dest = end(), min = T) >= 5 & timecheck.14(origin = start(), dest = end(), min = T) < 10) "yellow" else "green"
+            )
+          }else{
+            valueBox(
+              value = "NA",
+              subtitle = "", color = "purple"
+            )
+          }
+        }
+      })
+      
     })
     
     observeEvent(check(), {
@@ -145,7 +227,7 @@ shinyApp(
         DT::renderDT({
           invalidateLater(60000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
           
-          if (end.origin() %in% c("Coventry Station Interchange", "Earlsdon City Arms")){
+          if (end.origin() %in% c("Earlsdon City Arms", "Coventry Station Interchange", "Leamington Spa High Street", "Leamington Spa Upper Parade", "Kenilworth Clock", "Maudslay Road The Maudslay", "Eastern Green Farcroft Avenue", "Torrington Ave", "Tile Hill Rail Station", "Allesley Old Road / Mount St", "Cannon Park Shops")){
             DT::datatable(timecheck.12x(origin = start(), dest = "dest", DT=T), # set dist=dist to avoid generating incorrect timetable once clicked
                           filter = "none",
                           selection = "none",
@@ -175,7 +257,7 @@ shinyApp(
         DT::renderDT({
           invalidateLater(60000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
           
-          if(end.origin() %in% c("Coventry Station Warwick Road")){
+          if(end.origin() %in% c("Coventry Station Warwick Road", "Canley Prior Deram Walk", "Maudslay Road The Maudslay", "Eastern Green Farcroft Avenue", "Torrington Ave", "Tile Hill Rail Station", "Allesley Old Road / Mount St", "Cannon Park Shops")){
             DT::datatable(timecheck.11(origin = start(), dest = "dest", DT=T), # set dist=dist to avoid generating incorrect timetable once clicked
                           filter = "none",
                           selection = "none",
@@ -196,13 +278,69 @@ shinyApp(
                           rownames = FALSE
             )
           }
-          
-
         })
       )))
+      
+      # 14a
+      onclick('click.14a', showModal(modalDialog(
+        title = "Arrival Time (including last bus arrival)",
+        DT::renderDT({
+          invalidateLater(60000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
+          
+          if(end.origin() != "University of Warwick Bus Int"){
+            DT::datatable(timecheck.14a(origin = start(), dest = "dest", DT=T), # set dist=dist to avoid generating incorrect timetable once clicked
+                          filter = "none",
+                          selection = "none",
+                          options = list(searching = FALSE, 
+                                         lengthChange = FALSE,
+                                         ordering = FALSE
+                          ),
+                          rownames = FALSE
+            )
+          }else{
+            DT::datatable(timecheck.14a(origin = start(), dest = end(), DT=T),
+                          filter = "none",
+                          selection = "none",
+                          options = list(searching = FALSE, 
+                                         lengthChange = FALSE,
+                                         ordering = FALSE
+                          ),
+                          rownames = FALSE
+            )
+          }
+        })
+      )))
+      
+      # 14
+      onclick('click.14', showModal(modalDialog(
+        title = "Arrival Time (including last bus arrival)",
+        DT::renderDT({
+          invalidateLater(60000, session)  # Ensure the site gets updated after it gets idle for a certain period of time
+          
+          if(end.origin() %in% c("Coventry Station Interchange", "Coventry Station Warwick Road", "Canley Prior Deram Walk", "Earlsdon City Arms", "Coventry Station Interchange", "Leamington Spa High Street", "Leamington Spa Upper Parade", "Kenilworth Clock")){
+            DT::datatable(timecheck.14(origin = start(), dest = "dest", DT=T), # set dist=dist to avoid generating incorrect timetable once clicked
+                          filter = "none",
+                          selection = "none",
+                          options = list(searching = FALSE, 
+                                         lengthChange = FALSE,
+                                         ordering = FALSE
+                          ),
+                          rownames = FALSE
+            )
+          }else{
+            DT::datatable(timecheck.14(origin = start(), dest = end(), DT=T),
+                          filter = "none",
+                          selection = "none",
+                          options = list(searching = FALSE, 
+                                         lengthChange = FALSE,
+                                         ordering = FALSE
+                          ),
+                          rownames = FALSE
+            )
+          }
+        })
+      )))
+      
     })
-    
-    
-    
   }
 )

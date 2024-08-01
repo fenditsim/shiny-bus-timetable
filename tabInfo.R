@@ -18,7 +18,7 @@ tabInfo <- tabItem(tabName = "info",
                   p("2. Click the time box show a table of bus arrivals in terms of time and minutes, including the last one (with a minus indicating it's been away)."),
                   br(),
                   h2("Resources"),
+                  p("Click ", a(href = "https://fenditsim.github.io/projects/building-a-bus-timetable-app-with-shiny/", "here"), " to a relevant in my personal website."),
                   p("Click ", a(href = "https://github.com/fenditsim/shiny-bus-timetable", "here"), " to the corresponding Github repository."),
                   p("Click ", a(href = "https://github.com/fenditsim/shiny-bus-timetable/issues", "here"), " to report for any issues you find :)"),
-                  
                   )

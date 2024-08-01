@@ -137,31 +137,28 @@ for (stop in stops.14){
   timetable[[paste0("University of Warwick Bus Int_", if (stop == "Eastern Green Farcoft Avenue") "Eastern Green Farcroft Avenue" else stop, "_14")]] <- transform(data = uni.to.cov.14, stop=stop)
 }
 
-# # Remove timeslots that 14 does not arrive uni
-# timetable$`Coventry Pool Meadow_Uni_14`[!is.na(difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`,format="%H%M"), as.POSIXct(timetable$`Coventry Pool Meadow_Uni_14`,format="%H%M"), units = "min") < 49)]
-# timetable$`Maudslay Road The Maudslay_Uni_14`[!is.na(difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`,format="%H%M"), as.POSIXct(timetable$`Maudslay Road The Maudslay_Uni_14`,format="%H%M"), units = "min") < 39)]
-# timetable$`Eastern Green Farcroft Avenue_Uni_14`[!is.na(difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`,format="%H%M"), as.POSIXct(timetable$`Eastern Green Farcroft Avenue_Uni_14`,format="%H%M"), units = "min") < 29)]
-# 
-# 
-# for (i in 1:length(timetable$`Coventry Pool Meadow_Uni_14`)){
-#   if (difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`[i],format="%H%M"), as.POSIXct(timetable$`Coventry Pool Meadow_Uni_14`[i],format="%H%M"), units = "min") > 49){
-#     
-#   }
-#   
-#   if (i != 1 && is.na(timetable$`Coventry Pool Meadow_Uni_14`[i-1])){
-#     if (difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`[i-1],format="%H%M"), as.POSIXct(timetable$`Coventry Pool Meadow_Uni_14`[i],format="%H%M"), units = "min") > 49){
-#       timetable$`Coventry Pool Meadow_Uni_14`[i] <- NA
-#       timetable$`Maudslay Road The Maudslay_Uni_14`[i] <- NA
-#       timetable$`Eastern Green Farcroft Avenue_Uni_14`[i] <- NA
-#     }
-#   }else{
-#     if (difftime(as.POSIXct(timetable$`University of Warwick Bus Int_Uni_14`[i],format="%H%M"), as.POSIXct(timetable$`Coventry Pool Meadow_Uni_14`[i],format="%H%M"), units = "min") > 49){
-#       timetable$`Coventry Pool Meadow_Uni_14`[i] <- NA
-#       timetable$`Maudslay Road The Maudslay_Uni_14`[i] <- NA
-#       timetable$`Eastern Green Farcroft Avenue_Uni_14`[i] <- NA
-#     }
-#   }
-# }
+# Update timeslots of 14 from Coventry to Uni 
+# Redo the cleaning for Uni with different filters (pattern of str_split has a 'larger' empty pattern)
+uni <- cov.to.uni.14[grep('University of Warwick Bus Int', cov.to.uni.14)] %>% str_remove('University of Warwick Bus Int') %>% paste(collapse = "") %>% str_split(pattern = "      ") %>% unlist()
+uni <- uni[!uni==""]  # Remove empty elements
+uni <- uni[-grep(pattern = "0000", uni)]  # Remove elements with 0000
+uni <- as.vector(rbind(" NA", uni)) # Add ' NA' in between elements
+uni <- uni[-1]  # Remove the first element
+uni <- uni %>% str_split(pattern = " ") %>% unlist()  # Split uni with " "
+uni <- uni[!uni==""]  # Remove empty elements 
+uni[uni=="NA"] <- ""  # Replace NA with ""
+timetable$`University of Warwick Bus Int_Uni_14` <- uni # Put the update vector within timetable
+
+timetable$`Coventry Pool Meadow_Uni_14` <- timetable$`Coventry Pool Meadow_Uni_14`[1:length(uni)] # Ensure the vector (Cov to Uni) has the same length with that uni_uni vector
+timetable$`Coventry Pool Meadow_Uni_14` <- timetable$`Coventry Pool Meadow_Uni_14`[!timetable$`University of Warwick Bus Int_Uni_14`==""] # Remove unnecessary timeslots
+
+timetable$`Maudslay Road The Maudslay_Uni_14` <- timetable$`Maudslay Road The Maudslay_Uni_14`[1:length(uni)] # Ensure the vector (Cov to Uni) has the same length with that uni_uni vector
+timetable$`Maudslay Road The Maudslay_Uni_14` <- timetable$`Maudslay Road The Maudslay_Uni_14`[!timetable$`University of Warwick Bus Int_Uni_14`==""] # Remove unnecessary timeslots
+
+timetable$`Eastern Green Farcroft Avenue_Uni_14` <- timetable$`Eastern Green Farcroft Avenue_Uni_14`[1:length(uni)] # Ensure the vector (Cov to Uni) has the same length with that uni_uni vector
+timetable$`Eastern Green Farcroft Avenue_Uni_14` <- timetable$`Eastern Green Farcroft Avenue_Uni_14`[!timetable$`University of Warwick Bus Int_Uni_14`==""] # Remove unnecessary timeslots
+
+timetable$`University of Warwick Bus Int_Uni_14` <- timetable$`University of Warwick Bus Int_Uni_14`[!timetable$`University of Warwick Bus Int_Uni_14`==""] # Remove empty timeslots
 
 
 # Check when the time of latest bus arrival is

@@ -1,5 +1,12 @@
 tabLog <- tabItem(tabName = "log",
                   h1("Version Log"),
+                  h2("v0.4 - 2024.08.01"),
+                  tags$div(
+                    tags$ul(
+                      tags$li("Fixed known issue with Bus 14 (from Coventry to University) and 14a (not showing timeslots)"),
+                      tags$li("Updated Resources section (in Info tab) for relevant post")
+                    )
+                  ),
                   h2("v0.3 - 2024.07.31"),
                   tags$div(
                     tags$ul(

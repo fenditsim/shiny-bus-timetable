@@ -6,12 +6,13 @@ library(shinyjs)
 library(shinyBS)
 library(shinyWidgets)
 library(shinyalert)
+library(htmltools) # for findDependencies()
 
 # Import relevant R scripts
 source("data.R")
 source("tabInfo.R")
 source("tabLog.R")
-#source("https://raw.githubusercontent.com/dreamRs/shinyWidgets/26838f9e9ccdc90a47178b45318d110f5812d6e1/R/useShinydashboard.R")  # In case when useShinyDashboard() is depreciated
+source("https://raw.githubusercontent.com/dreamRs/shinyWidgets/26838f9e9ccdc90a47178b45318d110f5812d6e1/R/useShinydashboard.R")  # useShinyDashboard() is depreciated
 
 # Shiny app
 shinyApp(
@@ -90,7 +91,7 @@ shinyApp(
     # Welcome message
     shinyalert(
       title = "Welcome!",
-      text = "This bus timetable is for illustration purpose only.\nPlease visit Info for more information!\nLast Updated: 2024-08-01"
+      text = "This bus timetable is for illustration purpose only.\nPlease visit Info for more information!\nLast Updated: 2024-09-09"
     )
     
     # update choices for dest

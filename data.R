@@ -7,22 +7,13 @@ days.range <- seq(as.Date(paste0(format(Sys.Date(),"%Y"), "-03-24")), as.Date(pa
 bst.min <- max(days.range[weekdays(days.range)=="Sunday" & as.numeric(format(days.range, "%m")) == 03 & as.numeric(format(days.range, "%d")) >= 24])  # First day of BST this year
 bst.max <- min(days.range[weekdays(days.range)=="Sunday" & as.numeric(format(days.range, "%m")) == 10 & as.numeric(format(days.range, "%d")) >= 24])  # Last day of BST this year
 time.switch <- if (Sys.Date() >= bst.min & Sys.Date() <= bst.max) TRUE else FALSE # Check if today is within BST or not
-#time.switch <- FALSE # Comment this line when debugging
+# time.switch <- FALSE # Uncomment this line when debugging
 
 ## Download Data
 # Download bus timetable (pdf) from official site
-ttb.12x <- map(paste0("https://bustimetables-pdf.utrackapps.com/generateDaily.php?origin=Canley,%20Prior%20Deram%20Walk&dest=Coventry,%20Pool%20Meadow&privateCode=CVAO012X&departDate=", Sys.Date()),
-               pdf_text)
-
-ttb.11 <- map(paste0("https://bustimetables-pdf.utrackapps.com/generateDaily.php?origin=Canley,%20Prior%20Deram%20Walk&dest=Coventry,%20Pool%20Meadow&privateCode=CVAO011&departDate=", Sys.Date()),
-              pdf_text)
-
-ttb.14a <- map(paste0("https://bustimetables-pdf.utrackapps.com/generateDaily.php?origin=Canley,%20Prior%20Deram%20Walk&dest=Coventry,%20Pool%20Meadow&privateCode=CVAO014a&departDate=", Sys.Date()),
-               pdf_text)
-
-ttb.14 <- map(paste0("https://bustimetables-pdf.utrackapps.com/generateDaily.php?origin=Canley,%20Prior%20Deram%20Walk&dest=Coventry,%20Pool%20Meadow&privateCode=CVAO014&departDate=", Sys.Date()),
-               pdf_text)
-
+for (bus in c('12x', '11', '14', '14a')) assign(paste0('ttb.', bus), 
+                                                map(paste0("https://bustimetables-pdf.utrackapps.com/generateDaily.php?origin=Canley,%20Prior%20Deram%20Walk&dest=Coventry,%20Pool%20Meadow&privateCode=CVAO0", bus,"&departDate=", Sys.Date()), pdf_text)
+                                                )
 
 # Convert pdf into r dataframe
 uni.to.cov <- str_split(ttb.12x[[1]][1], "\n") %>% unlist() # University of Warwick to Coventry

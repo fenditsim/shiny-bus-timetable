@@ -1,5 +1,12 @@
 tabLog <- tabItem(tabName = "log",
                   h1("Version Log"),
+                  h2("v0.5 - 2024.09.09"),
+                  tags$div(
+                    tags$ul(
+                      tags$li("Update code for downloading bus timetable"),
+                      tags$li("Fixed potential issue with useShinyDashboard as it has been depreciated")
+                    )
+                  ),
                   h2("v0.4 - 2024.08.01"),
                   tags$div(
                     tags$ul(
